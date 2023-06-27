@@ -77,7 +77,9 @@ class Mysql extends Builder
                 implode(' , ', $insertFields),
                 implode(' , ', $values),
                 $this->parseComment($options['comment']),
-            ], $this->insertAllSql);
+            ],
+            $this->insertAllSql
+        );
     }
 
     /**
