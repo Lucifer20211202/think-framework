@@ -17,7 +17,7 @@
   ],
   "require": {
     "php": ">=7.0.0",
-    "topthink/think-installer": "~1.0",
+    "better-framework/think-installer": "~1.0",
     "ext-pdo": "*",
     "ext-json": "*",
     "ext-posix": "*",
