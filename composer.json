@@ -32,6 +32,9 @@
     "sebastian/phpcpd": "2.*",
     "phpdocumentor/reflection-docblock": "^2.0"
   },
+  "replace": {
+    "topthink/framework": "~5.0"
+  },
   "autoload": {
     "psr-4": {
       "think\\": "library/think"
