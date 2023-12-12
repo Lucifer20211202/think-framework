@@ -47,7 +47,7 @@ class View extends Response
         if (is_null($name)) {
             return $this->vars;
         } else {
-            return isset($this->vars[$name]) ? $this->vars[$name] : null;
+            return $this->vars[$name] ?? null;
         }
     }
 

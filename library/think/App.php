@@ -340,7 +340,7 @@ class App
 
         self::$debug && Log::record('[ RUN ] ' . $reflect->class . '->' . $reflect->name . '[ ' . $reflect->getFileName() . ' ]', 'info');
 
-        return $reflect->invokeArgs(isset($class) ? $class : null, $args);
+        return $reflect->invokeArgs($class ?? null, $args);
     }
 
     /**
@@ -453,7 +453,7 @@ class App
                 $data = self::module(
                     $dispatch['module'],
                     $config,
-                    isset($dispatch['convert']) ? $dispatch['convert'] : null
+                    $dispatch['convert'] ?? null
                 );
                 break;
             case 'controller': // 执行控制器操作

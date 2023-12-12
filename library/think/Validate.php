@@ -295,7 +295,7 @@ class Validate
                 // 字段|描述 用于指定属性名称
                 list($key, $title) = explode('|', $key);
             } else {
-                $title = isset($this->field[$key]) ? $this->field[$key] : $key;
+                $title = $this->field[$key] ?? $key;
             }
 
             // 场景检测
@@ -338,7 +338,7 @@ class Validate
                 }
             }
         }
-        return !empty($this->error) ? false : true;
+        return empty($this->error);
     }
 
     /**
@@ -363,7 +363,7 @@ class Validate
                 // 判断验证类型
                 list($type, $rule) = $this->getValidateType($key, $rule);
 
-                $callback = isset(self::$type[$type]) ? self::$type[$type] : [$this, $type];
+                $callback = self::$type[$type] ?? [$this, $type];
 
                 $result = call_user_func_array($callback, [$value, $rule]);
             }
@@ -405,7 +405,7 @@ class Validate
                 // 如果不是require 有数据才会行验证
                 if (0 === strpos($info, 'require') || (!is_null($value) && '' !== $value)) {
                     // 验证类型
-                    $callback = isset(self::$type[$type]) ? self::$type[$type] : [$this, $type];
+                    $callback = self::$type[$type] ?? [$this, $type];
                     // 验证数据
                     $result = call_user_func_array($callback, [$value, $rule, $data, $field, $title]);
                 } else {
@@ -874,7 +874,7 @@ class Validate
                 $db = Db::name($rule[0]);
             }
         }
-        $key = isset($rule[1]) ? $rule[1] : $field;
+        $key = $rule[1] ?? $field;
 
         if (strpos($key, '^')) {
             // 支持多个字段验证
@@ -892,7 +892,7 @@ class Validate
             $map = [];
         }
 
-        $pk = isset($rule[3]) ? $rule[3] : $db->getPk();
+        $pk = $rule[3] ?? $db->getPk();
         if (is_string($pk)) {
             if (isset($rule[2])) {
                 $map[$pk] = ['neq', $rule[2]];
@@ -931,7 +931,7 @@ class Validate
         if (is_string($rule) && strpos($rule, ',')) {
             list($rule, $param) = explode(',', $rule);
         } elseif (is_array($rule)) {
-            $param = isset($rule[1]) ? $rule[1] : null;
+            $param = $rule[1] ?? null;
             $rule  = $rule[0];
         } else {
             $param = null;
@@ -1281,9 +1281,9 @@ class Validate
         } elseif (strpos($key, '.')) {
             // 支持二维数组验证
             list($name1, $name2) = explode('.', $key);
-            $value               = isset($data[$name1][$name2]) ? $data[$name1][$name2] : null;
+            $value               = $data[$name1][$name2] ?? null;
         } else {
-            $value = isset($data[$key]) ? $data[$key] : null;
+            $value = $data[$key] ?? null;
         }
         return $value;
     }

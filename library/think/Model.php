@@ -11,8 +11,12 @@
 
 namespace think;
 
+use ArrayAccess;
 use BadMethodCallException;
+use Closure;
 use InvalidArgumentException;
+use JsonSerializable;
+use stdClass;
 use think\db\Query;
 use think\exception\ValidateException;
 use think\model\Collection as ModelCollection;
@@ -31,7 +35,7 @@ use think\model\relation\MorphTo;
  * @package think
  * @mixin Query
  */
-abstract class Model implements \JsonSerializable, \ArrayAccess
+abstract class Model implements JsonSerializable, ArrayAccess
 {
     // 数据库查询对象池
     protected static $links = [];
@@ -702,7 +706,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
                 $value = empty($value) ? [] : json_decode($value, true);
                 break;
             case 'object':
-                $value = empty($value) ? new \stdClass() : json_decode($value);
+                $value = empty($value) ? new stdClass() : json_decode($value);
                 break;
             case 'serialize':
                 try {
@@ -950,8 +954,8 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     /**
      * 转换当前模型数据集为数据集对象
      * @access public
-     * @param array|\think\Collection $collection 数据集
-     * @return \think\Collection
+     * @param array|Collection  $collection 数据集
+     * @return Collection
      */
     public function toCollection($collection)
     {
@@ -1740,7 +1744,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
         if (is_array($data) && key($data) !== 0) {
             $result = $result->where($data);
             $data   = null;
-        } elseif ($data instanceof \Closure) {
+        } elseif ($data instanceof Closure) {
             call_user_func_array($data, [ & $result]);
             $data = null;
         } elseif ($data instanceof Query) {
@@ -1765,7 +1769,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
         } elseif (is_array($data) && key($data) !== 0) {
             $query->where($data);
             $data = null;
-        } elseif ($data instanceof \Closure) {
+        } elseif ($data instanceof Closure) {
             call_user_func_array($data, [ & $query]);
             $data = null;
         }
@@ -1783,9 +1787,9 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     /**
      * 命名范围
      * @access public
-     * @param string|array|\Closure $name 命名范围名称 逗号分隔
-     * @internal  mixed                 ...$params 参数调用
+     * @param string|array|Closure $name 命名范围名称 逗号分隔
      * @return Query
+     *@internal  mixed                 ...$params 参数调用
      */
     public static function scope($name)
     {
@@ -1794,7 +1798,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
         $params = func_get_args();
         array_shift($params);
         array_unshift($params, $query);
-        if ($name instanceof \Closure) {
+        if ($name instanceof Closure) {
             call_user_func_array($name, $params);
         } elseif (is_string($name)) {
             $name = explode(',', $name);
@@ -1834,7 +1838,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     public static function has($relation, $operator = '>=', $count = 1, $id = '*')
     {
         $relation = (new static())->$relation();
-        if (is_array($operator) || $operator instanceof \Closure) {
+        if (is_array($operator) || $operator instanceof Closure) {
             return $relation->hasWhere($operator);
         }
         return $relation->has($operator, $count, $id);
@@ -1885,7 +1889,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
         foreach ($relations as $key => $relation) {
             $subRelation = '';
             $closure     = null;
-            if ($relation instanceof \Closure) {
+            if ($relation instanceof Closure) {
                 // 支持闭包查询过滤关联条件
                 $closure  = $relation;
                 $relation = $key;
@@ -1915,7 +1919,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
         foreach ($relations as $key => $relation) {
             $subRelation = '';
             $closure     = false;
-            if ($relation instanceof \Closure) {
+            if ($relation instanceof Closure) {
                 $closure  = $relation;
                 $relation = $key;
             }
@@ -1944,7 +1948,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
         foreach ($relations as $key => $relation) {
             $subRelation = '';
             $closure     = false;
-            if ($relation instanceof \Closure) {
+            if ($relation instanceof Closure) {
                 $closure  = $relation;
                 $relation = $key;
             }
@@ -1972,7 +1976,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
 
         foreach ($relations as $key => $relation) {
             $closure = false;
-            if ($relation instanceof \Closure) {
+            if ($relation instanceof Closure) {
                 $closure  = $relation;
                 $relation = $key;
             } elseif (is_string($key)) {

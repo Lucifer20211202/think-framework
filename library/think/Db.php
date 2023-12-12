@@ -147,15 +147,17 @@ class Db
             return [];
         }
 
-        $dsn = [
-            'type'     => $info['scheme'],
-            'username' => isset($info['user']) ? $info['user'] : '',
-            'password' => isset($info['pass']) ? $info['pass'] : '',
-            'hostname' => isset($info['host']) ? $info['host'] : '',
-            'hostport' => isset($info['port']) ? $info['port'] : '',
-            'database' => !empty($info['path']) ? ltrim($info['path'], '/') : '',
-            'charset'  => isset($info['fragment']) ? $info['fragment'] : 'utf8',
-        ];
+        if (!empty($info)) {
+            $dsn = [
+                'type'     => $info['scheme'],
+                'username' => $info['user'] ?? '',
+                'password' => $info['pass'] ?? '',
+                'hostname' => $info['host'] ?? '',
+                'hostport' => $info['port'] ?? '',
+                'database' => !empty($info['path']) ? ltrim($info['path'], '/') : '',
+                'charset'  => $info['fragment'] ?? 'utf8',
+            ];
+        }
 
         if (isset($info['query'])) {
             parse_str($info['query'], $dsn['params']);

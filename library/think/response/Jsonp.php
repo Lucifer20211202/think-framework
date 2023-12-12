@@ -45,8 +45,7 @@ class Jsonp extends Response
                 throw new \InvalidArgumentException(json_last_error_msg());
             }
 
-            $data = $handler . '(' . $data . ');';
-            return $data;
+            return $handler . '(' . $data . ');';
         } catch (\Exception $e) {
             if ($e->getPrevious()) {
                 throw $e->getPrevious();

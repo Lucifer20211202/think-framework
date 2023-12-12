@@ -446,7 +446,7 @@ class Template
                 // 读取布局模板
                 $layoutFile = $this->parseTemplateFile($array['name']);
                 if ($layoutFile) {
-                    $replace = isset($array['replace']) ? $array['replace'] : $this->config['layout_item'];
+                    $replace = $array['replace'] ?? $this->config['layout_item'];
                     // 替换布局的主体内容
                     $content = str_replace($replace, $content, file_get_contents($layoutFile));
                 }
@@ -1058,7 +1058,7 @@ class Template
                 $template = str_replace(['/', ':'], $this->config['view_depr'], substr($template, 1));
             }
             if ($this->config['view_base']) {
-                $module = isset($module) ? $module : Request::instance()->module();
+                $module = $module ?? Request::instance()->module();
                 $path   = $this->config['view_base'] . ($module ? $module . DS : '');
             } else {
                 $path = isset($module) ? APP_PATH . $module . DS . basename($this->config['view_path']) . DS : $this->config['view_path'];

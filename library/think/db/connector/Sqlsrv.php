@@ -65,7 +65,7 @@ class Sqlsrv extends Connection
         $result = $pdo->fetchAll(PDO::FETCH_ASSOC);
         $info   = [];
         if ($result) {
-            foreach ($result as $key => $val) {
+            foreach ($result as $val) {
                 $val                       = array_change_key_case($val);
                 $info[$val['column_name']] = [
                     'name'    => $val['column_name'],

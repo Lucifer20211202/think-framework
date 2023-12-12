@@ -62,8 +62,7 @@ class Cx extends Taglib
      */
     public function tagPhp($tag, $content)
     {
-        $parseStr = '<?php ' . $content . ' ?>';
-        return $parseStr;
+        return '<?php ' . $content . ' ?>';
     }
 
     /**
@@ -116,7 +115,6 @@ class Cx extends Taglib
         if (!empty($parseStr)) {
             return $parseStr;
         }
-        return;
     }
 
     /**
@@ -144,7 +142,7 @@ class Cx extends Taglib
         $name   = $tag['name'];
         $key    = !empty($tag['key']) ? $tag['key'] : 'key';
         $item   = !empty($tag['id']) ? $tag['id'] : $tag['item'];
-        $empty  = isset($tag['empty']) ? $tag['empty'] : '';
+        $empty  = $tag['empty'] ?? '';
         $offset = !empty($tag['offset']) && is_numeric($tag['offset']) ? intval($tag['offset']) : 0;
         $length = !empty($tag['length']) && is_numeric($tag['length']) ? intval($tag['length']) : 'null';
 
@@ -195,7 +193,6 @@ class Cx extends Taglib
         if (!empty($parseStr)) {
             return $parseStr;
         }
-        return;
     }
 
     /**
@@ -215,8 +212,7 @@ class Cx extends Taglib
     {
         $condition = !empty($tag['expression']) ? $tag['expression'] : $tag['condition'];
         $condition = $this->parseCondition($condition);
-        $parseStr  = '<?php if(' . $condition . '): ?>' . $content . '<?php endif; ?>';
-        return $parseStr;
+        return '<?php if(' . $condition . '): ?>' . $content . '<?php endif; ?>';
     }
 
     /**
@@ -231,8 +227,7 @@ class Cx extends Taglib
     {
         $condition = !empty($tag['expression']) ? $tag['expression'] : $tag['condition'];
         $condition = $this->parseCondition($condition);
-        $parseStr  = '<?php elseif(' . $condition . '): ?>';
-        return $parseStr;
+        return '<?php elseif(' . $condition . '): ?>';
     }
 
     /**
@@ -244,8 +239,7 @@ class Cx extends Taglib
      */
     public function tagElse($tag)
     {
-        $parseStr = '<?php else: ?>';
-        return $parseStr;
+        return '<?php else: ?>';
     }
 
     /**
@@ -265,8 +259,7 @@ class Cx extends Taglib
     {
         $name     = !empty($tag['expression']) ? $tag['expression'] : $tag['name'];
         $name     = $this->autoBuildVar($name);
-        $parseStr = '<?php switch(' . $name . '): ?>' . $content . '<?php endswitch; ?>';
-        return $parseStr;
+        return '<?php switch(' . $name . '): ?>' . $content . '<?php endswitch; ?>';
     }
 
     /**
@@ -278,7 +271,7 @@ class Cx extends Taglib
      */
     public function tagCase($tag, $content)
     {
-        $value = isset($tag['expression']) ? $tag['expression'] : $tag['value'];
+        $value = $tag['expression'] ?? $tag['value'];
         $flag  = substr($value, 0, 1);
         if ('$' == $flag || ':' == $flag) {
             $value = $this->autoBuildVar($value);
@@ -293,7 +286,7 @@ class Cx extends Taglib
             $value = 'case "' . $value . '":';
         }
         $parseStr = '<?php ' . $value . ' ?>' . $content;
-        $isBreak  = isset($tag['break']) ? $tag['break'] : '';
+        $isBreak  = $tag['break'] ?? '';
         if ('' == $isBreak || $isBreak) {
             $parseStr .= '<?php break; ?>';
         }
@@ -310,8 +303,7 @@ class Cx extends Taglib
      */
     public function tagDefault($tag)
     {
-        $parseStr = '<?php default: ?>';
-        return $parseStr;
+        return '<?php default: ?>';
     }
 
     /**
@@ -327,7 +319,7 @@ class Cx extends Taglib
     {
         $name  = $tag['name'];
         $value = $tag['value'];
-        $type  = isset($tag['type']) ? $tag['type'] : 'eq'; // 比较类型
+        $type  = $tag['type'] ?? 'eq'; // 比较类型
         $name  = $this->autoBuildVar($name);
         $flag  = substr($value, 0, 1);
         if ('$' == $flag || ':' == $flag) {
@@ -344,8 +336,7 @@ class Cx extends Taglib
                 break;
         }
         $type     = $this->parseCondition(' ' . $type . ' ');
-        $parseStr = '<?php if(' . $name . ' ' . $type . ' ' . $value . '): ?>' . $content . '<?php endif; ?>';
-        return $parseStr;
+        return '<?php if(' . $name . ' ' . $type . ' ' . $value . '): ?>' . $content . '<?php endif; ?>';
     }
 
     /**
@@ -397,8 +388,7 @@ class Cx extends Taglib
     {
         $name     = $tag['name'];
         $name     = $this->autoBuildVar($name);
-        $parseStr = '<?php if(isset(' . $name . ')): ?>' . $content . '<?php endif; ?>';
-        return $parseStr;
+        return '<?php if(isset(' . $name . ')): ?>' . $content . '<?php endif; ?>';
     }
 
     /**
@@ -414,8 +404,7 @@ class Cx extends Taglib
     {
         $name     = $tag['name'];
         $name     = $this->autoBuildVar($name);
-        $parseStr = '<?php if(!isset(' . $name . ')): ?>' . $content . '<?php endif; ?>';
-        return $parseStr;
+        return '<?php if(!isset(' . $name . ')): ?>' . $content . '<?php endif; ?>';
     }
 
     /**
@@ -431,8 +420,7 @@ class Cx extends Taglib
     {
         $name     = $tag['name'];
         $name     = $this->autoBuildVar($name);
-        $parseStr = '<?php if(empty(' . $name . ') || ((' . $name . ' instanceof \think\Collection || ' . $name . ' instanceof \think\Paginator ) && ' . $name . '->isEmpty())): ?>' . $content . '<?php endif; ?>';
-        return $parseStr;
+        return '<?php if(empty(' . $name . ') || ((' . $name . ' instanceof \think\Collection || ' . $name . ' instanceof \think\Paginator ) && ' . $name . '->isEmpty())): ?>' . $content . '<?php endif; ?>';
     }
 
     /**
@@ -448,8 +436,7 @@ class Cx extends Taglib
     {
         $name     = $tag['name'];
         $name     = $this->autoBuildVar($name);
-        $parseStr = '<?php if(!(empty(' . $name . ') || ((' . $name . ' instanceof \think\Collection || ' . $name . ' instanceof \think\Paginator ) && ' . $name . '->isEmpty()))): ?>' . $content . '<?php endif; ?>';
-        return $parseStr;
+        return '<?php if(!(empty(' . $name . ') || ((' . $name . ' instanceof \think\Collection || ' . $name . ' instanceof \think\Paginator ) && ' . $name . '->isEmpty()))): ?>' . $content . '<?php endif; ?>';
     }
 
     /**
@@ -462,8 +449,7 @@ class Cx extends Taglib
     public function tagDefined($tag, $content)
     {
         $name     = $tag['name'];
-        $parseStr = '<?php if(defined("' . $name . '")): ?>' . $content . '<?php endif; ?>';
-        return $parseStr;
+        return '<?php if(defined("' . $name . '")): ?>' . $content . '<?php endif; ?>';
     }
 
     /**
@@ -476,8 +462,7 @@ class Cx extends Taglib
     public function tagNotdefined($tag, $content)
     {
         $name     = $tag['name'];
-        $parseStr = '<?php if(!defined("' . $name . '")): ?>' . $content . '<?php endif; ?>';
-        return $parseStr;
+        return '<?php if(!defined("' . $name . '")): ?>' . $content . '<?php endif; ?>';
     }
 
     /**
@@ -490,7 +475,7 @@ class Cx extends Taglib
      */
     public function tagLoad($tag, $content)
     {
-        $file     = isset($tag['file']) ? $tag['file'] : $tag['href'];
+        $file     = $tag['file'] ?? $tag['href'];
         $type     = isset($tag['type']) ? strtolower($tag['type']) : '';
         $parseStr = '';
         $endStr   = '';
@@ -540,8 +525,7 @@ class Cx extends Taglib
         } else {
             $value = '\'' . $tag['value'] . '\'';
         }
-        $parseStr = '<?php ' . $name . ' = ' . $value . '; ?>';
-        return $parseStr;
+        return '<?php ' . $name . ' = ' . $value . '; ?>';
     }
 
     /**
@@ -562,8 +546,7 @@ class Cx extends Taglib
         } else {
             $value = '\'' . $tag['value'] . '\'';
         }
-        $parseStr = '<?php define(' . $name . ', ' . $value . '); ?>';
-        return $parseStr;
+        return '<?php define(' . $name . ', ' . $value . '); ?>';
     }
 
     /**
@@ -630,10 +613,10 @@ class Cx extends Taglib
      */
     public function tagUrl($tag, $content)
     {
-        $url    = isset($tag['link']) ? $tag['link'] : '';
-        $vars   = isset($tag['vars']) ? $tag['vars'] : '';
-        $suffix = isset($tag['suffix']) ? $tag['suffix'] : 'true';
-        $domain = isset($tag['domain']) ? $tag['domain'] : 'false';
+        $url    = $tag['link'] ?? '';
+        $vars   = $tag['vars'] ?? '';
+        $suffix = $tag['suffix'] ?? 'true';
+        $domain = $tag['domain'] ?? 'false';
         return '<?php echo url("' . $url . '","' . $vars . '",' . $suffix . ',' . $domain . ');?>';
     }
 

@@ -221,7 +221,7 @@ class Debug
     public static function inject(Response $response, &$content)
     {
         $config = Config::get('trace');
-        $type   = isset($config['type']) ? $config['type'] : 'Html';
+        $type   = $config['type'] ?? 'Html';
         $class  = false !== strpos($type, '\\') ? $type : '\\think\\debug\\' . ucwords($type);
 
         unset($config['type']);

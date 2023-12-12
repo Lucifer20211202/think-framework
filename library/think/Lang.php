@@ -156,7 +156,7 @@ class Lang
         }
 
         $key   = strtolower($name);
-        $value = isset(self::$lang[$range][$key]) ? self::$lang[$range][$key] : $name;
+        $value = self::$lang[$range][$key] ?? $name;
 
         // 变量解析
         if (!empty($vars) && is_array($vars)) {
