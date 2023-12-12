@@ -160,7 +160,7 @@ class Query
         if ($allTable) {
             $table = '*';
         } else {
-            $table = isset($this->options['table']) ? $this->options['table'] : $this->getTable();
+            $table = $this->options['table'] ?? $this->getTable();
         }
 
         static::$readMaster[$table] = true;
@@ -409,8 +409,7 @@ class Query
                 $tableName[] = 'SELECT * FROM ' . $this->getTable() . '_' . ($i + 1);
             }
 
-            $tableName = '( ' . implode(" UNION ", $tableName) . ') AS ' . $this->name;
-            return $tableName;
+            return '( ' . implode(" UNION ", $tableName) . ') AS ' . $this->name;
         }
     }
 
@@ -573,9 +572,7 @@ class Query
             throw new Exception('not support data:' . $field);
         }
 
-        $result = $this->value($aggregate . '(' . (!empty($distinct) ? 'DISTINCT ' : '') . $field . ') AS tp_' . strtolower($aggregate), 0, $force);
-
-        return $result;
+        return $this->value($aggregate . '(' . (!empty($distinct) ? 'DISTINCT ' : '') . $field . ') AS tp_' . strtolower($aggregate), 0, $force);
     }
 
     /**
@@ -744,7 +741,7 @@ class Query
             // 如果为组数，则循环调用join
             foreach ($join as $key => $value) {
                 if (is_array($value) && 2 <= count($value)) {
-                    $this->join($value[0], $value[1], isset($value[2]) ? $value[2] : $type);
+                    $this->join($value[0], $value[1], $value[2] ?? $type);
                 }
             }
         } else {
@@ -841,11 +838,11 @@ class Query
         }
         if (true === $field) {
             // 获取全部字段
-            $fields = $this->getTableInfo($tableName ?: (isset($this->options['table']) ? $this->options['table'] : ''), 'fields');
+            $fields = $this->getTableInfo($tableName ?: ($this->options['table'] ?? ''), 'fields');
             $field  = $fields ?: ['*'];
         } elseif ($except) {
             // 字段排除
-            $fields = $this->getTableInfo($tableName ?: (isset($this->options['table']) ? $this->options['table'] : ''), 'fields');
+            $fields = $this->getTableInfo($tableName ?: ($this->options['table'] ?? ''), 'fields');
             $field  = $fields ? array_diff($fields, $field) : $field;
         }
         if ($tableName) {
@@ -971,7 +968,7 @@ class Query
         $this->options['view'] = true;
         if (is_array($join) && key($join) === 0) {
             foreach ($join as $key => $val) {
-                $this->view($val[0], $val[1], isset($val[2]) ? $val[2] : null, isset($val[3]) ? $val[3] : 'INNER');
+                $this->view($val[0], $val[1], $val[2] ?? null, $val[3] ?? 'INNER');
             }
         } else {
             $fields = [];
@@ -1473,7 +1470,7 @@ class Query
 
         $page = $page < 1 ? 1 : $page;
 
-        $config['path'] = isset($config['path']) ? $config['path'] : call_user_func([$class, 'getCurrentPath']);
+        $config['path'] = $config['path'] ?? call_user_func([$class, 'getCurrentPath']);
 
         if (!isset($total) && !$simple) {
             $options = $this->getOptions();
@@ -2054,7 +2051,7 @@ class Query
         if ('' === $name) {
             return $this->options;
         } else {
-            return isset($this->options[$name]) ? $this->options[$name] : null;
+            return $this->options[$name] ?? null;
         }
     }
 
@@ -2222,7 +2219,7 @@ class Query
             $key = isset($alias) ? $alias . '.' . $pk : $pk;
             // 根据主键查询
             if (is_array($data)) {
-                $where[$key] = isset($data[$pk]) ? $data[$pk] : ['in', $data];
+                $where[$key] = $data[$pk] ?? ['in', $data];
             } else {
                 $where[$key] = strpos($data, ',') ? ['IN', $data] : $data;
             }
@@ -2245,7 +2242,6 @@ class Query
                 $options['where']['AND'] = $where;
             }
         }
-        return;
     }
 
     /**
@@ -2274,7 +2270,7 @@ class Query
         // 执行操作
         $result = 0 === $sql ? 0 : $this->execute($sql, $bind, $this);
         if ($result) {
-            $sequence  = $sequence ?: (isset($options['sequence']) ? $options['sequence'] : null);
+            $sequence  = $sequence ?: ($options['sequence'] ?? null);
             $lastInsId = $this->getLastInsID($sequence);
             if ($lastInsId) {
                 $pk = $this->getPk($options);
@@ -2689,7 +2685,7 @@ class Query
                     // 返回PDOStatement对象
                     return $resultSet;
                 }
-                $result = isset($resultSet[0]) ? $resultSet[0] : null;
+                $result = $resultSet[0] ?? null;
             }
 
             if (isset($cache) && $result) {
@@ -2703,7 +2699,7 @@ class Query
             if (!empty($this->model)) {
                 // 返回模型对象
                 $result = $this->model->newInstance($result);
-                $result->isUpdate(true, isset($options['where']['AND']) ? $options['where']['AND'] : null);
+                $result->isUpdate(true, $options['where']['AND'] ?? null);
                 // 关联查询
                 if (!empty($options['relation'])) {
                     $result->relationQuery($options['relation']);

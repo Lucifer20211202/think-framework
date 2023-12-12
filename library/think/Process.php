@@ -380,7 +380,7 @@ class Process
 
         $this->requireProcessIsStarted(__FUNCTION__);
 
-        $this->readPipes(false, '\\' === DS ? !$this->processInformation['running'] : true);
+        $this->readPipes(false, !('\\' === DS) || !$this->processInformation['running']);
 
         return $this->stdout;
     }
@@ -430,7 +430,7 @@ class Process
 
         $this->requireProcessIsStarted(__FUNCTION__);
 
-        $this->readPipes(false, '\\' === DS ? !$this->processInformation['running'] : true);
+        $this->readPipes(false, !('\\' === DS) || !$this->processInformation['running']);
 
         return $this->stderr;
     }
@@ -493,7 +493,7 @@ class Process
             return;
         }
 
-        return isset(self::$exitCodes[$exitcode]) ? self::$exitCodes[$exitcode] : 'Unknown error';
+        return self::$exitCodes[$exitcode] ?? 'Unknown error';
     }
 
     /**
@@ -1024,7 +1024,7 @@ class Process
         $this->processInformation = proc_get_status($this->process);
         $this->captureExitCode();
 
-        $this->readPipes($blocking, '\\' === DS ? !$this->processInformation['running'] : true);
+        $this->readPipes($blocking, !('\\' === DS) || !$this->processInformation['running']);
 
         if (!$this->processInformation['running']) {
             $this->close();

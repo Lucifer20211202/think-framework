@@ -99,7 +99,7 @@ class Console
                         }
                         $trace[$title] = $result;
                     } else {
-                        $trace[$title] = isset($log[$name]) ? $log[$name] : '';
+                        $trace[$title] = $log[$name] ?? '';
                     }
             }
         }

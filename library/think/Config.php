@@ -129,7 +129,7 @@ class Config
         // 非二级配置时直接返回
         if (!strpos($name, '.')) {
             $name = strtolower($name);
-            return isset(self::$config[$range][$name]) ? self::$config[$range][$name] : null;
+            return self::$config[$range][$name] ?? null;
         }
 
         // 二维数组设置和获取支持
@@ -144,9 +144,7 @@ class Config
             is_file($file) && self::load($file, $name[0]);
         }
 
-        return isset(self::$config[$range][$name[0]][$name[1]]) ?
-            self::$config[$range][$name[0]][$name[1]] :
-            null;
+        return self::$config[$range][$name[0]][$name[1]] ?? null;
     }
 
     /**

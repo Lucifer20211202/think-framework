@@ -308,7 +308,7 @@ class Request
             return $this;
         } elseif (!$this->url) {
             if (IS_CLI) {
-                $this->url = isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : '';
+                $this->url = $_SERVER['argv'][1] ?? '';
             } elseif (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
                 $this->url = $_SERVER['HTTP_X_REWRITE_URL'];
             } elseif (isset($_SERVER['REQUEST_URI'])) {
@@ -407,7 +407,7 @@ class Request
                 unset($_GET[Config::get('var_pathinfo')]);
             } elseif (IS_CLI) {
                 // CLI模式下 index.php module/controller/action/params/...
-                $_SERVER['PATH_INFO'] = isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : '';
+                $_SERVER['PATH_INFO'] = $_SERVER['argv'][1] ?? '';
             }
 
             // 分析PATHINFO信息
@@ -885,7 +885,7 @@ class Request
     public function file($name = '')
     {
         if (empty($this->file)) {
-            $this->file = isset($_FILES) ? $_FILES : [];
+            $this->file = $_FILES ?? [];
         }
         if (is_array($name)) {
             return $this->file = array_merge($this->file, $name);
@@ -933,7 +933,6 @@ class Request
                 return $array[$name];
             }
         }
-        return;
     }
 
     /**
@@ -991,7 +990,7 @@ class Request
             return $this->header;
         }
         $name = str_replace('_', '-', strtolower($name));
-        return isset($this->header[$name]) ? $this->header[$name] : $default;
+        return $this->header[$name] ?? $default;
     }
 
     /**
@@ -1187,7 +1186,7 @@ class Request
                 return false;
             }
         }
-        return ($checkEmpty && '' === $param) ? false : true;
+        return !(($checkEmpty && '' === $param));
     }
 
     /**
@@ -1264,7 +1263,7 @@ class Request
     public function isAjax($ajax = false)
     {
         $value  = $this->server('HTTP_X_REQUESTED_WITH', '', 'strtolower');
-        $result = ('xmlhttprequest' == $value) ? true : false;
+        $result = 'xmlhttprequest' == $value;
         if (true === $ajax) {
             return $result;
         } else {
@@ -1282,7 +1281,7 @@ class Request
      */
     public function isPjax($pjax = false)
     {
-        $result = !is_null($this->server('HTTP_X_PJAX')) ? true : false;
+        $result = !is_null($this->server('HTTP_X_PJAX'));
         if (true === $pjax) {
             return $result;
         } else {
@@ -1680,7 +1679,7 @@ class Request
 
     public function __get($name)
     {
-        return isset($this->bind[$name]) ? $this->bind[$name] : null;
+        return $this->bind[$name] ?? null;
     }
 
     public function __isset($name)

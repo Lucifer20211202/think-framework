@@ -284,7 +284,7 @@ class Response
     public function getHeader($name = '')
     {
         if (!empty($name)) {
-            return isset($this->header[$name]) ? $this->header[$name] : null;
+            return $this->header[$name] ?? null;
         } else {
             return $this->header;
         }

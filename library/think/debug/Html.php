@@ -94,11 +94,11 @@ class Html
                         $names  = explode('|', $name);
                         $result = [];
                         foreach ($names as $name) {
-                            $result = array_merge($result, isset($log[$name]) ? $log[$name] : []);
+                            $result = array_merge($result, $log[$name] ?? []);
                         }
                         $trace[$title] = $result;
                     } else {
-                        $trace[$title] = isset($log[$name]) ? $log[$name] : '';
+                        $trace[$title] = $log[$name] ?? '';
                     }
             }
         }

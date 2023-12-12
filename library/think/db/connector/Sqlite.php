@@ -30,8 +30,7 @@ class Sqlite extends Connection
      */
     protected function parseDsn($config)
     {
-        $dsn = 'sqlite:' . $config['database'];
-        return $dsn;
+        return 'sqlite:' .$config['database'];
     }
 
     /**
@@ -49,7 +48,7 @@ class Sqlite extends Connection
         $result = $pdo->fetchAll(PDO::FETCH_ASSOC);
         $info   = [];
         if ($result) {
-            foreach ($result as $key => $val) {
+            foreach ($result as $val) {
                 $val                = array_change_key_case($val);
                 $info[$val['name']] = [
                     'name'    => $val['name'],

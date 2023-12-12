@@ -1034,7 +1034,7 @@ abstract class Connection
         if ($m != $r) {
             $dbMaster = [];
             foreach (['username', 'password', 'hostname', 'hostport', 'database', 'dsn', 'charset'] as $name) {
-                $dbMaster[$name] = isset($_config[$name][$m]) ? $_config[$name][$m] : $_config[$name][0];
+                $dbMaster[$name] = $_config[$name][$m] ?? $_config[$name][0];
             }
         }
         $dbConfig = [];

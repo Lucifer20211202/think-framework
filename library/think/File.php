@@ -101,7 +101,7 @@ class File extends SplFileObject
      */
     public function getInfo($name = '')
     {
-        return isset($this->info[$name]) ? $this->info[$name] : $this->info;
+        return $this->info[$name] ?? $this->info;
     }
 
     /**

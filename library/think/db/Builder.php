@@ -11,6 +11,7 @@
 
 namespace think\db;
 
+use Closure;
 use PDO;
 use think\Exception;
 
@@ -133,7 +134,7 @@ abstract class Builder
                     $result[$item] = $val;
                 } else {
                     $key = str_replace('.', '_', $key);
-                    $this->query->bind('data__' . $key, $val, isset($bind[$key]) ? $bind[$key] : PDO::PARAM_STR);
+                    $this->query->bind('data__' . $key, $val, $bind[$key] ?? PDO::PARAM_STR);
                     $result[$item] = ':data__' . $key;
                 }
             }
@@ -273,7 +274,7 @@ abstract class Builder
             foreach ($val as $field => $value) {
                 if ($value instanceof Expression) {
                     $str[] = ' ' . $key . ' ( ' . $value->getValue() . ' )';
-                } elseif ($value instanceof \Closure) {
+                } elseif ($value instanceof Closure) {
                     // 使用闭包查询
                     $query = new Query($this->connection);
                     call_user_func_array($value, [ & $query]);
@@ -360,7 +361,7 @@ abstract class Builder
             $value = $value->__toString();
         }
 
-        $bindType = isset($binds[$field]) ? $binds[$field] : PDO::PARAM_STR;
+        $bindType = $binds[$field] ?? PDO::PARAM_STR;
         if (is_scalar($value) && array_key_exists($field, $binds) && !in_array($exp, ['EXP', 'NOT NULL', 'NULL', 'IN', 'NOT IN', 'BETWEEN', 'NOT BETWEEN']) && strpos($exp, 'TIME') === false) {
             if (strpos($value, ':') !== 0 || !$this->query->isBind(substr($value, 1))) {
                 if ($this->query->isBind($bindName)) {
@@ -374,7 +375,7 @@ abstract class Builder
         $whereStr = '';
         if (in_array($exp, ['=', '<>', '>', '>=', '<', '<='])) {
             // 比较运算
-            if ($value instanceof \Closure) {
+            if ($value instanceof Closure) {
                 $whereStr .= $key . ' ' . $exp . ' ' . $this->parseClosure($value);
             } else {
                 $whereStr .= $key . ' ' . $exp . ' ' . $this->parseValue($value, $field);
@@ -385,7 +386,7 @@ abstract class Builder
                 foreach ($value as $item) {
                     $array[] = $key . ' ' . $exp . ' ' . $this->parseValue($item, $field);
                 }
-                $logic = isset($val[2]) ? $val[2] : 'AND';
+                $logic = $val[2] ?? 'AND';
                 $whereStr .= '(' . implode(' ' . strtoupper($logic) . ' ', $array) . ')';
             } else {
                 $whereStr .= $key . ' ' . $exp . ' ' . $this->parseValue($value, $field);
@@ -402,7 +403,7 @@ abstract class Builder
             $whereStr .= $key . ' IS ' . $exp;
         } elseif (in_array($exp, ['NOT IN', 'IN'])) {
             // IN 查询
-            if ($value instanceof \Closure) {
+            if ($value instanceof Closure) {
                 $whereStr .= $key . ' ' . $exp . ' ' . $this->parseClosure($value);
             } else {
                 $value = array_unique(is_array($value) ? $value : explode(',', $value));
@@ -450,7 +451,7 @@ abstract class Builder
             $whereStr .= $key . ' ' . $exp . ' ' . $between;
         } elseif (in_array($exp, ['NOT EXISTS', 'EXISTS'])) {
             // EXISTS 查询
-            if ($value instanceof \Closure) {
+            if ($value instanceof Closure) {
                 $whereStr .= $exp . ' ' . $this->parseClosure($value);
             } else {
                 $whereStr .= $exp . ' (' . $value . ')';
@@ -662,7 +663,7 @@ abstract class Builder
         $type = $union['type'];
         unset($union['type']);
         foreach ($union as $u) {
-            if ($u instanceof \Closure) {
+            if ($u instanceof Closure) {
                 $sql[] = $type . ' ' . $this->parseClosure($u);
             } elseif (is_string($u)) {
                 $sql[] = $type . ' ( ' . $this->parseSqlTable($u) . ' )';
@@ -709,7 +710,7 @@ abstract class Builder
      */
     public function select($options = [])
     {
-        $sql = str_replace(
+        return str_replace(
             ['%TABLE%', '%DISTINCT%', '%FIELD%', '%JOIN%', '%WHERE%', '%GROUP%', '%HAVING%', '%ORDER%', '%LIMIT%', '%UNION%', '%LOCK%', '%COMMENT%', '%FORCE%'],
             [
                 $this->parseTable($options['table'], $options),
@@ -728,7 +729,6 @@ abstract class Builder
             ],
             $this->selectSql
         );
-        return $sql;
     }
 
     /**
@@ -749,7 +749,7 @@ abstract class Builder
         $fields = array_keys($data);
         $values = array_values($data);
 
-        $sql = str_replace(
+        return str_replace(
             ['%INSERT%', '%TABLE%', '%FIELD%', '%DATA%', '%COMMENT%'],
             [
                 $replace ? 'REPLACE' : 'INSERT',
@@ -760,8 +760,6 @@ abstract class Builder
             ],
             $this->insertSql
         );
-
-        return $sql;
     }
 
     /**
@@ -841,8 +839,7 @@ abstract class Builder
         }
 
         $fields = array_map([$this, 'parseKey'], $fields);
-        $sql    = 'INSERT INTO ' . $this->parseTable($table, $options) . ' (' . implode(',', $fields) . ') ' . $this->select($options);
-        return $sql;
+        return 'INSERT INTO ' . $this->parseTable($table, $options) . ' (' . implode(',', $fields) . ') ' . $this->select($options);
     }
 
     /**
@@ -863,7 +860,7 @@ abstract class Builder
             $set[] = $key . '=' . $val;
         }
 
-        $sql = str_replace(
+        return str_replace(
             ['%TABLE%', '%SET%', '%JOIN%', '%WHERE%', '%ORDER%', '%LIMIT%', '%LOCK%', '%COMMENT%'],
             [
                 $this->parseTable($options['table'], $options),
@@ -877,8 +874,6 @@ abstract class Builder
             ],
             $this->updateSql
         );
-
-        return $sql;
     }
 
     /**
@@ -889,7 +884,7 @@ abstract class Builder
      */
     public function delete($options)
     {
-        $sql = str_replace(
+        return str_replace(
             ['%TABLE%', '%USING%', '%JOIN%', '%WHERE%', '%ORDER%', '%LIMIT%', '%LOCK%', '%COMMENT%'],
             [
                 $this->parseTable($options['table'], $options),
@@ -903,7 +898,5 @@ abstract class Builder
             ],
             $this->deleteSql
         );
-
-        return $sql;
     }
 }

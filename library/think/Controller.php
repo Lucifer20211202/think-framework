@@ -14,7 +14,7 @@ namespace think;
 use think\exception\ValidateException;
 use traits\controller\Jump;
 
-Loader::import('controller/Jump', TRAIT_PATH, EXT);
+Loader::import('controller/Jump', TRAIT_PATH);
 
 class Controller
 {

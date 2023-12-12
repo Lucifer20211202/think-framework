@@ -63,7 +63,7 @@ class Url
         }
 
         if ($url) {
-            $rule = Route::name(isset($name) ? $name : $url . (isset($info['query']) ? '?' . $info['query'] : ''));
+            $rule = Route::name($name ?? $url.(isset($info['query']) ? '?'.$info['query'] : ''));
             if (is_null($rule) && isset($info['query'])) {
                 $rule = Route::name($url);
                 // 解析地址里面参数 合并到vars
