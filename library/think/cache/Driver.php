@@ -164,7 +164,7 @@ abstract class Driver
         } elseif (is_null($keys)) {
             $this->tag = $name;
         } else {
-            $key = 'tag_' . md5($name);
+            $key = $this->getTagKey($name);
             if (is_string($keys)) {
                 $keys = explode(',', $keys);
             }
@@ -188,7 +188,7 @@ abstract class Driver
     protected function setTagItem($name)
     {
         if ($this->tag) {
-            $key       = 'tag_' . md5($this->tag);
+            $key       = $this->getTagKey($this->tag);
             $this->tag = null;
             if ($this->has($key)) {
                 $value   = explode(',', $this->get($key));
@@ -209,7 +209,7 @@ abstract class Driver
      */
     protected function getTagItem($tag)
     {
-        $key   = 'tag_' . md5($tag);
+        $key   = $this->getTagKey($tag);
         $value = $this->get($key);
         if ($value) {
             return array_filter(explode(',', $value));
@@ -228,4 +228,10 @@ abstract class Driver
     {
         return $this->handler;
     }
+
+    protected function getTagKey($tag)
+    {
+        return 'tag_' . md5($tag);
+    }
+
 }

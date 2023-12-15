@@ -179,7 +179,7 @@ class Lite extends Driver
             foreach ($keys as $key) {
                 unlink($key);
             }
-            $this->rm('tag_' . md5($tag));
+            $this->rm($this->getTagKey($tag));
             return true;
         }
         array_map("unlink", glob($this->options['path'] . ($this->options['prefix'] ? $this->options['prefix'] . DS : '') . '*.php'));

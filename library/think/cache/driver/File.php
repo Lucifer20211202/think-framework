@@ -235,7 +235,7 @@ class File extends Driver
             foreach ($keys as $key) {
                 $this->unlink($key);
             }
-            $this->rm('tag_' . md5($tag));
+            $this->rm($this->getTagKey($tag));
             return true;
         }
         $files = (array) glob($this->options['path'] . ($this->options['prefix'] ? $this->options['prefix'] . DS : '') . '*');

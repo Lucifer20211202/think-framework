@@ -169,7 +169,7 @@ class Memcache extends Driver
             foreach ($keys as $key) {
                 $this->handler->delete($key);
             }
-            $this->rm('tag_' . md5($tag));
+            $this->rm($this->getTagKey($tag));
             return true;
         }
         return $this->handler->flush();

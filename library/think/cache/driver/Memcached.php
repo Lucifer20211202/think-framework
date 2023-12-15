@@ -179,7 +179,7 @@ class Memcached extends Driver
             // 指定标签清除
             $keys = $this->getTagItem($tag);
             $this->handler->deleteMulti($keys);
-            $this->rm('tag_' . md5($tag));
+            $this->rm($this->getTagKey($tag));
             return true;
         }
         return $this->handler->flush();
